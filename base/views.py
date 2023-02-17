@@ -9,6 +9,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 
+@api_view(['GET',])
+def home(request    ):
+    return Response('Notes API')
+
 
 #View to create new note or list all existing notes
 @api_view(['GET', 'POST'])
@@ -46,7 +50,7 @@ def note_detail(request, pk):
         serializer = NoteSerializer(note)
         return Response(serializer.data)
 
-    #update note
+    #update note(only author is allowed to)
     elif request.method == 'PUT':
         if request.user == note.created_by:
             serializer = NoteSerializer(note, data=request.data)
@@ -57,7 +61,7 @@ def note_detail(request, pk):
             message = {'detail': 'Authors reserve the exlusive rights to edit their notes'}
             return Response(message, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #delete note
+    #delete note(only author is allowed to)
     elif request.method == 'DELETE':
         if request.user == note.created_by:
             note.delete()
