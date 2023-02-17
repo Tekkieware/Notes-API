@@ -27,9 +27,9 @@ def note_list(request):
 
 #View to fetch, update or delete an existing note
 @api_view(['GET', 'PUT', 'DELETE'])
-def snippet_detail(request, pk):
+def note_detail(request, pk):
     
-    #check if note exists
+    #check if note exists with id(pk)
     try:
         note = Note.objects.get(pk=pk)
     except Note.DoesNotExist:
