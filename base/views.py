@@ -2,9 +2,11 @@ from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from base.models import Note
-from base.serializers import NoteSerializer
+from base.serializers import NoteSerializer, UserSerializerWithToken, UserSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 
 
@@ -52,7 +54,8 @@ def note_detail(request, pk):
                 serializer.save()
                 return Response(serializer.data)
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            message = {'detail': 'Authors reserve the exlusive rights to edit their notes'}
+            return Response(message, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     #delete note
     elif request.method == 'DELETE':
@@ -60,6 +63,24 @@ def note_detail(request, pk):
             note.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED,)
+            message = {'detail': 'Authors reserve the exlusive rights to delete their notes'}
+            return Response(message, status=status.HTTP_401_UNAUTHORIZED,)
         
 
+@api_view(['POST'])
+def registerUser(request):
+    data = request.data
+    try:
+        user = User.objects.create(
+            username=data['username'],
+            email=data['email'],
+            password=make_password(data['password'])
+        )
+        print('created')
+        serializer = UserSerializerWithToken(user, many=False)
+
+        return Response(serializer.data)
+    except:
+        message = {'detail': 'User with this email already exists'}
+
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
