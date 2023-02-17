@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password
 
 
 @api_view(['GET',])
-def home(request    ):
+def home(request):
     return Response('Notes API')
 
 
