@@ -6,6 +6,10 @@ class Note(models.Model):
     content = models.TextField(null=True, blank=True)
     created_at =  models.DateTimeField(auto_now_add=True)
     updated_at =  models.DateTimeField(auto_now=True)
-
+    
+    #Listing notes in their order of creation.
+    class Meta:
+        ordering = ['created_at']
+    #Returning a title whenever an object of the model is called.
     def __str__(self) -> str:
         return self.title
